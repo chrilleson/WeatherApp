@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Weather from './weather/page'
 
 export default function Home() {
   return (
@@ -107,6 +108,10 @@ export default function Home() {
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
+      </div>
+
+      <div className='row'>
+          <Weather />
       </div>
     </main>
   )
