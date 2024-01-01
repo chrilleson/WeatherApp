@@ -1,3 +1,4 @@
+using System.Net;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,9 +9,20 @@ builder.Host.UseSerilog((hostingContext, _, loggerConfiguration) => loggerConfig
     .WriteTo.Console());
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(60);
+});
 builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+    options.HttpsPort = 5001;
+});
 
 var app = builder.Build();
 
@@ -20,6 +32,7 @@ app.UseSwaggerUI();
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseHsts();
 app.UseCors(corsBuilder =>
 {
     corsBuilder
