@@ -5,18 +5,19 @@ import { useEffect, useState } from "react"
 import { useForecast } from "@/lib/hooks/useWeatherForecast";
 
 export default function Weather() {
-  const [data, setData] = useState<any[]>([])
-  const { forecast, isLoading, error} = useForecast();
+  const [data, setData] = useState<any[]>([])  
+  const { forecast, isLoading, error, mutate } = useForecast();
 
   useEffect(() => {
-    fetchWeather();
-  });
+    setData(forecast);
+  }, [forecast]);
 
   const fetchWeather = () => {    
-      setData(forecast);    
+    mutate().then(res => setData(res));       
   };
 
   if (isLoading) return <p>Loading...</p>
+  if (!!error) return <p>Something went wrong.</p>
   if (!data) return <p>No forecast data</p>
 
   return (
