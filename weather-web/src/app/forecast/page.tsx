@@ -2,25 +2,22 @@
 
 import { useEffect, useState } from "react"
 
+import { useForecast } from "@/lib/hooks/useWeatherForecast";
+
 export default function Weather() {
-  const [data, setData] = useState<any[]>([])
-  const [isLoading, setLoading] = useState(true)
+  const [data, setData] = useState<any[]>([])  
+  const { forecast, isLoading, error, mutate } = useForecast();
 
   useEffect(() => {
-    fetchWeather();
-  }, []);
+    setData(forecast);
+  }, [forecast]);
 
-  const fetchWeather = () => {
-    fetch('https://localhost:5001/weatherforecast')
-    .then((res) => res.json())
-    .then((data) => {
-      setData(data);
-      setLoading(false);
-    })
-    .catch((err) => console.error(err));
+  const fetchWeather = () => {    
+    mutate().then(res => setData(res));       
   };
 
   if (isLoading) return <p>Loading...</p>
+  if (!!error) return <p>Something went wrong.</p>
   if (!data) return <p>No forecast data</p>
 
   return (
@@ -39,8 +36,9 @@ export default function Weather() {
             </tr>
           </thead>
           <tbody>
-            {data.map(d => {
-              return (<tr>
+            {data.map((d,i) => {
+              return (
+              <tr key={i}>
                 <td>
                   {d.date}
                 </td>
